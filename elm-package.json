@@ -1,7 +1,7 @@
 {
     "version": "1.0.0",
     "summary": "CodeMirror wrapper",
-    "repository": "https://github.com/sgillis/elm-highcharts.git",
+    "repository": "https://github.com/GabiGrin/elm-codemirror.git",
     "license": "MIT",
     "source-directories": [
         "src"
