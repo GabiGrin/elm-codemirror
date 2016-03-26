@@ -10471,8 +10471,20 @@ Elm.Main.make = function (_elm) {
       switch (_p0.ctor)
       {case "CodeChange": return _U.update(model,{code: _p0._0});
          case "ChangeLineNumbers": return _U.update(model,{lineNumbers: _p0._0});
+         case "ChangeLineWrapping": return _U.update(model,{lineWrapping: _p0._0});
          case "ChangeTheme": return _U.update(model,{theme: _p0._0});
          default: return _U.update(model,{mode: _p0._0});}
+   });
+   var checkbox = F4(function (address,isChecked,tag,name) {
+      return A2($Html.div,
+      _U.list([]),
+      _U.list([A2($Html.input,
+              _U.list([$Html$Attributes.type$("checkbox")
+                      ,$Html$Attributes.checked(isChecked)
+                      ,A3($Html$Events.on,"change",$Html$Events.targetChecked,function (_p1) {    return A2($Signal.message,address,tag(_p1));})]),
+              _U.list([]))
+              ,$Html.text(name)
+              ,A2($Html.br,_U.list([]),_U.list([]))]));
    });
    var header = A2($Html.div,
    _U.list([]),
@@ -10481,19 +10493,24 @@ Elm.Main.make = function (_elm) {
            _U.list([]),
            _U.list([$Html.text("The 2 instances and the text area are bound to the same model. You can control theme and mode (only javascript and elm are loaded), and edit the code from a regular textarea too")]))]));
    var inputStyle = $Html$Attributes.style(_U.list([{ctor: "_Tuple2",_0: "width",_1: "100%"},{ctor: "_Tuple2",_0: "margin-bottom",_1: "10px"}]));
-   var containerStyle = $Html$Attributes.style(_U.list([{ctor: "_Tuple2",_0: "flex",_1: "1"},{ctor: "_Tuple2",_0: "margin",_1: "10px"}]));
+   var containerStyle = $Html$Attributes.style(_U.list([{ctor: "_Tuple2",_0: "flex",_1: "33% 0 0"}
+                                                       ,{ctor: "_Tuple2",_0: "max-width",_1: "33%"}
+                                                       ,{ctor: "_Tuple2",_0: "margin",_1: "10px"}]));
    var container = function (children) {    return A2($Html.div,_U.list([containerStyle]),children);};
-   var cmConfig = function (model) {    return {theme: model.theme,mode: model.mode,height: "auto",lineNumbers: model.lineNumbers,lineWrapping: false};};
-   var init = {code: "main = \"Hello World\"",lineNumbers: false,theme: "monokai",mode: "elm"};
+   var cmConfig = function (model) {
+      return {theme: model.theme,mode: model.mode,height: "auto",lineNumbers: model.lineNumbers,lineWrapping: model.lineWrapping};
+   };
+   var init = {code: "main = \"Hello World\"",lineNumbers: true,lineWrapping: false,theme: "monokai",mode: "elm"};
    var ChangeMode = function (a) {    return {ctor: "ChangeMode",_0: a};};
    var ChangeTheme = function (a) {    return {ctor: "ChangeTheme",_0: a};};
+   var ChangeLineWrapping = function (a) {    return {ctor: "ChangeLineWrapping",_0: a};};
    var ChangeLineNumbers = function (a) {    return {ctor: "ChangeLineNumbers",_0: a};};
    var CodeChange = function (a) {    return {ctor: "CodeChange",_0: a};};
    var codeMirrorView = F2(function (add,model) {
       return _U.eq(model.theme,"hide") ? A2($Html.div,_U.list([]),_U.list([$Html.text("hidden")])) : A3($CodeMirror.codeMirror,
       cmConfig(model),
-      function (_p1) {
-         return A2($Signal.message,add,CodeChange(_p1));
+      function (_p2) {
+         return A2($Signal.message,add,CodeChange(_p2));
       },
       model.code);
    });
@@ -10507,8 +10524,8 @@ Elm.Main.make = function (_elm) {
                       ,container(_U.list([A2($Html.h2,_U.list([]),_U.list([$Html.text("Instance 2")]))
                                          ,A3($CodeMirror.codeMirror,
                                          cmConfig(model),
-                                         function (_p2) {
-                                            return A2($Signal.message,add,CodeChange(_p2));
+                                         function (_p3) {
+                                            return A2($Signal.message,add,CodeChange(_p3));
                                          },
                                          model.code)]))
                       ,container(_U.list([A2($Html.h2,_U.list([]),_U.list([$Html.text("Controls")]))
@@ -10522,8 +10539,8 @@ Elm.Main.make = function (_elm) {
                                                          ,A3($Html$Events.on,
                                                          "input",
                                                          $Html$Events.targetValue,
-                                                         function (_p3) {
-                                                            return A2($Signal.message,add,ChangeTheme(_p3));
+                                                         function (_p4) {
+                                                            return A2($Signal.message,add,ChangeTheme(_p4));
                                                          })]),
                                                  _U.list([]))]))
                                          ,A2($Html.div,
@@ -10536,10 +10553,16 @@ Elm.Main.make = function (_elm) {
                                                          ,A3($Html$Events.on,
                                                          "input",
                                                          $Html$Events.targetValue,
-                                                         function (_p4) {
-                                                            return A2($Signal.message,add,ChangeMode(_p4));
+                                                         function (_p5) {
+                                                            return A2($Signal.message,add,ChangeMode(_p5));
                                                          })]),
                                                  _U.list([]))]))
+                                         ,A2($Html.div,
+                                         _U.list([]),
+                                         _U.list([$Html.text("Line numbers"),A4(checkbox,add,model.lineNumbers,ChangeLineNumbers,"Line numbers")]))
+                                         ,A2($Html.div,
+                                         _U.list([]),
+                                         _U.list([$Html.text("Line wrapping"),A4(checkbox,add,model.lineWrapping,ChangeLineWrapping,"Line wrapping")]))
                                          ,A2($Html.div,
                                          _U.list([]),
                                          _U.list([$Html.text("\"raw\" code")
@@ -10550,17 +10573,18 @@ Elm.Main.make = function (_elm) {
                                                          ,A3($Html$Events.on,
                                                          "input",
                                                          $Html$Events.targetValue,
-                                                         function (_p5) {
-                                                            return A2($Signal.message,add,CodeChange(_p5));
+                                                         function (_p6) {
+                                                            return A2($Signal.message,add,CodeChange(_p6));
                                                          })]),
                                                  _U.list([]))]))]))]))]));
    });
    var main = $StartApp$Simple.start({model: init,update: update,view: view});
-   var Model = F4(function (a,b,c,d) {    return {code: a,lineNumbers: b,theme: c,mode: d};});
+   var Model = F5(function (a,b,c,d,e) {    return {code: a,lineNumbers: b,lineWrapping: c,theme: d,mode: e};});
    return _elm.Main.values = {_op: _op
                              ,Model: Model
                              ,CodeChange: CodeChange
                              ,ChangeLineNumbers: ChangeLineNumbers
+                             ,ChangeLineWrapping: ChangeLineWrapping
                              ,ChangeTheme: ChangeTheme
                              ,ChangeMode: ChangeMode
                              ,init: init
@@ -10570,6 +10594,7 @@ Elm.Main.make = function (_elm) {
                              ,container: container
                              ,codeMirrorView: codeMirrorView
                              ,header: header
+                             ,checkbox: checkbox
                              ,view: view
                              ,update: update
                              ,main: main};

@@ -10,6 +10,7 @@ import Html.Attributes exposing (..)
 type alias Model =
   { code : String
   , lineNumbers : Bool
+  , lineWrapping : Bool
   , theme : String
   , mode : String
   }
@@ -18,6 +19,7 @@ type alias Model =
 type Action
   = CodeChange String
   | ChangeLineNumbers Bool
+  | ChangeLineWrapping Bool
   | ChangeTheme String
   | ChangeMode String
 
@@ -25,7 +27,8 @@ type Action
 init : Model
 init =
   { code = "main = \"Hello World\""
-  , lineNumbers = False
+  , lineNumbers = True
+  , lineWrapping = True
   , theme = "monokai"
   , mode = "elm"
   }
@@ -37,7 +40,7 @@ cmConfig model =
   , mode = model.mode
   , height = "auto"
   , lineNumbers = model.lineNumbers
-  , lineWrapping = False
+  , lineWrapping = model.lineWrapping
   }
 
 
@@ -48,11 +51,12 @@ cmConfig model =
 
 
 containerStyle =
-  style [ ( "flex", "1" ), ( "margin", "10px" ) ]
+  style [ ( "flex", "33% 0 0" ),("max-width", "33%"), ( "margin", "10px" ) ]
 
 
 inputStyle =
-  style [("width", "100%"), ("margin-bottom", "10px")]
+  style [ ( "width", "100%" ), ( "margin-bottom", "10px" ) ]
+
 
 container children =
   div [ containerStyle ] children
@@ -76,6 +80,21 @@ header =
     []
     [ h2 [] [ text "elm-codemirror example" ]
     , p [] [ text "The 2 instances and the text area are bound to the same model. You can control theme and mode (only javascript and elm are loaded), and edit the code from a regular textarea too" ]
+    ]
+
+
+checkbox : Signal.Address Action -> Bool -> (Bool -> Action) -> String -> Html
+checkbox address isChecked tag name =
+  div
+    []
+    [ input
+        [ type' "checkbox"
+        , checked isChecked
+        , on "change" targetChecked (Signal.message address << tag)
+        ]
+        []
+    , text name
+    , br [] []
     ]
 
 
@@ -117,6 +136,16 @@ view add model =
                 ]
             , div
                 []
+                [ text "Line numbers"
+                , checkbox add model.lineNumbers ChangeLineNumbers "Line numbers"
+                ]
+            , div
+                []
+                [ text "Line wrapping"
+                , checkbox add model.lineWrapping ChangeLineWrapping "Line wrapping"
+                ]
+            , div
+                []
                 [ text "\"raw\" code"
                 , textarea
                     [ placeholder "Code"
@@ -139,6 +168,9 @@ update acc model =
 
     ChangeLineNumbers val ->
       { model | lineNumbers = val }
+
+    ChangeLineWrapping val ->
+      { model | lineWrapping = val }
 
     ChangeTheme theme ->
       { model | theme = theme }
