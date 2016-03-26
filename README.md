@@ -2,7 +2,7 @@
 
 Elm bindings for [CodeMirror](https://codemirror.net/)
 
-Uses virtual-dom hooks as proposed by @sgillis ([blog post](http://sgillis.github.io/posts/2016-03-25-highcharts-integration-in-elm.html))
+Uses virtual-dom hooks as proposed by [@sgillis](https://github.com/sgillis) ([blog post](http://sgillis.github.io/posts/2016-03-25-highcharts-integration-in-elm.html))
 
 
 ## install
@@ -24,7 +24,7 @@ To see it action clone this repo and then:
 ```
 $ cd example
 $ elm make Main.elm --output=Main.js
-$ open index.Html
+$ open index.html
 ```
 
 
